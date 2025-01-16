@@ -2,17 +2,18 @@ import { useState } from "react"
 import {useNavigate} from 'react-router-dom'
 import axios from 'axios'
 
-export const Formulario = () => {
+export const Formulario = ({paciente}) => {
 
     const navigate = useNavigate()
     // Paso 1
     const[form, setForm] = useState({
-        nombre:"",
-        propietario:"",
-        email:"",
-        celular:"",
-        convencional:"",
-        sintomas:""
+        nombre:paciente?.nombre || "",
+        propietario:paciente?.propietario || "",
+        email:paciente?.email || "",
+        celular:paciente?.celular || "",
+        convencional:paciente?.convencional || "",
+        salida: new Date(paciente?.salida).toLocaleDateString('en-CA', {timeZone:'UTC'}) || "",
+        sintomas:paciente?.sintomas || ""
     })
 
     // Paso 2
@@ -26,26 +27,48 @@ export const Formulario = () => {
     // Paso 3
     const handleSubmit = async (e) => {
         e.preventDefault()
-        try {
-            const token = localStorage.getItem('token')
-            const url = `${import.meta.env.VITE_BACKEND_URL}/paciente/registro`
-            const options = {
-                headers:{
-                    'Content-Type':'application/json',
-                    Authorization: `Bearer ${token}`
-                }
-            }
-            await axios.post(url,form,options)
 
-            navigate('/dashboard/listar')
-        } catch (error) {
-            
+        if(paciente?._id){
+            // Actualizar
+            try {
+                const token = localStorage.getItem('token')
+                const url = `${import.meta.env.VITE_BACKEND_URL}/paciente/actualizar/${paciente._id}`
+                const options = {
+                    headers:{
+                        method:'PUT',
+                        'Content-Type':'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+                await axios.put(url,form,options)
+                navigate('/dashboard/listar')
+            } catch (error) {
+                console.log(error)
+            }
         }
+        else{
+            // Crear
+            try {
+                const token = localStorage.getItem('token')
+                const url = `${import.meta.env.VITE_BACKEND_URL}/paciente/registro`
+                const options = {
+                    headers:{
+                        'Content-Type':'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+                await axios.post(url,form,options)
+    
+                navigate('/dashboard/listar')
+            } catch (error) {
+                
+            }
+
+        }
+        
       
     }
     
-    
-
     return (
         
         <form onSubmit={handleSubmit}>
@@ -59,6 +82,7 @@ export const Formulario = () => {
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                     placeholder='nombre de la mascota'
                     name='nombre'
+                    value={form.nombre || ''}
                     onChange={handleChange}
                 />
             </div>
@@ -72,6 +96,7 @@ export const Formulario = () => {
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                     placeholder='nombre del propietario'
                     name='propietario'
+                    value={form.propietario || ''}
                     onChange={handleChange}
                 />
             </div>
@@ -85,6 +110,7 @@ export const Formulario = () => {
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                     placeholder='email del propietario'
                     name='email'
+                    value={form.email || ''}
                     onChange={handleChange}
                 />
             </div>
@@ -98,6 +124,7 @@ export const Formulario = () => {
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                     placeholder='celular del propietario'
                     name='celular'
+                    value={form.celular || ''}
                     onChange={handleChange}
                 />
             </div>
@@ -111,6 +138,7 @@ export const Formulario = () => {
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                     placeholder='convencional del propietario'
                     name='convencional'
+                    value={form.convencional || ''}
                     onChange={handleChange}
                 />
             </div>
@@ -124,6 +152,7 @@ export const Formulario = () => {
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                     placeholder='salida'
                     name='salida'
+                    value={form.salida || ""}
                     onChange={handleChange}
                 />
             </div>
@@ -137,6 +166,7 @@ export const Formulario = () => {
                     className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md mb-5'
                     placeholder='Ingrese los síntomas de la mascota'
                     name='sintomas'
+                    value={form.sintomas || ''}
                     onChange={handleChange}
                 />
             </div>
@@ -146,7 +176,7 @@ export const Formulario = () => {
                 className='bg-gray-600 w-full p-3 
                     text-slate-300 uppercase font-bold rounded-lg 
                     hover:bg-gray-900 cursor-pointer transition-all'
-                value='Registrar' />
+                value={paciente?._id ? 'Actualizar':'Registrar'} />
 
         </form>
     )
