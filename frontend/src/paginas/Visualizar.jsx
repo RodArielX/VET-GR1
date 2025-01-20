@@ -4,10 +4,14 @@ import axios from 'axios';
 import Mensaje from '../componets/Alertas/Mensaje';
 import ModalTratamiento from '../componets/Modals/ModalTratamiento,';
 import tratamientosContext from '../context/TratamientoProvider';
+import TablaTratamientos from '../componets/TablaTratamientos';
+import AuthContext from '../context/AuthProvider';
 
 const Visualizar = () => {
 
-    const { modal, handleModal } = useContext(tratamientosContext)
+    const {auth} = useContext(AuthContext)
+
+    const { modal, handleModal, tratamientos, setTratamientos } = useContext(tratamientosContext)
 
 
     const { id } = useParams()
@@ -33,6 +37,7 @@ const Visualizar = () => {
                 }
                 const respuesta = await axios.get(url, options)
                 setPaciente(respuesta.data.paciente)
+                setTratamientos(respuesta.data.tratamientos)
             } catch (error) {
                 setMensaje({ respuesta: error.response.data.msg, tipo: false })
             }
@@ -46,6 +51,12 @@ const Visualizar = () => {
                 <h1 className='font-black text-4xl text-gray-500'>Visualizar Paciente</h1>
                 <hr className='my-4' />
                 <p className='mb-8'>Este submódulo te permite visualizar los datos del paciente</p>
+                {
+                    auth.rol === "veterinario" &&
+                    (
+                        <button className="px-5 py-2 bg-green-800 text-white rounded-lg hover:bg-green-700" onClick={handleModal}>Registrar</button>
+                    )
+                }
             </div>
             <div>
                 {
@@ -95,6 +106,14 @@ const Visualizar = () => {
 
                                 {
                                     modal && <ModalTratamiento idPaciente={paciente._id} />
+                                }
+
+                                {
+                                    tratamientos.length == 0 
+                                    ?
+                                        <p>"No existen registros"</p>
+                                    :
+                                        <TablaTratamientos tratamientos={tratamientos}/>
                                 }
 
                             </>
