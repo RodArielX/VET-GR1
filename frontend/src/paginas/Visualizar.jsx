@@ -9,7 +9,7 @@ import AuthContext from '../context/AuthProvider';
 
 const Visualizar = () => {
 
-    const {auth} = useContext(AuthContext)
+    const { auth } = useContext(AuthContext)
 
     const { modal, handleModal, tratamientos, setTratamientos } = useContext(tratamientosContext)
 
@@ -51,12 +51,6 @@ const Visualizar = () => {
                 <h1 className='font-black text-4xl text-gray-500'>Visualizar Paciente</h1>
                 <hr className='my-4' />
                 <p className='mb-8'>Este submódulo te permite visualizar los datos del paciente</p>
-                {
-                    auth.rol === "veterinario" &&
-                    (
-                        <button className="px-5 py-2 bg-green-800 text-white rounded-lg hover:bg-green-700" onClick={handleModal}>Registrar</button>
-                    )
-                }
             </div>
             <div>
                 {
@@ -101,7 +95,12 @@ const Visualizar = () => {
                                 <hr className='my-4' />
                                 <div className='flex justify-between items-center'>
                                     <p>Este submódulo te permite visualizar los tratamientos del paciente</p>
-                                    <button className="px-5 py-2 bg-green-800 text-white rounded-lg hover:bg-green-700" onClick={handleModal}>Registrar</button>
+                                    {
+                                        auth.rol === "veterinario" &&
+                                        (
+                                            <button className="px-5 py-2 bg-green-800 text-white rounded-lg hover:bg-green-700" onClick={handleModal}>Registrar</button>
+                                        )
+                                    }
                                 </div>
 
                                 {
@@ -109,11 +108,11 @@ const Visualizar = () => {
                                 }
 
                                 {
-                                    tratamientos.length == 0 
-                                    ?
+                                    tratamientos.length == 0
+                                        ?
                                         <p>"No existen registros"</p>
-                                    :
-                                        <TablaTratamientos tratamientos={tratamientos}/>
+                                        :
+                                        <TablaTratamientos tratamientos={tratamientos} />
                                 }
 
                             </>

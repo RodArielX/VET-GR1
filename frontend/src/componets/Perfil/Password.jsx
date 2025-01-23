@@ -1,11 +1,45 @@
 
-import { useState } from "react"
+import { useContext, useState } from "react"
+import Mensaje from "../Alertas/Mensaje"
+import AuthContext from "../../context/AuthProvider"
 
 const Password = () => {
+
+    const {actualizarPassword} = useContext(AuthContext)
+
+    const [mensaje, setMensaje] = useState({})
+
     const [form, setForm] = useState({
         passwordactual:"",
         passwordnuevo:""
     })
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        if (Object.values(form).includes(""))
+        {
+            setMensaje({ respuesta: "Todos los campos deben ser ingresados", tipo: false })
+                setTimeout(() => {
+                    setMensaje({})
+                }, 3000);
+            return
+        }
+
+				if (form.passwordnuevo.length < 6)
+        {
+            setMensaje({ respuesta: "El password debe tener mínimo 6 carácteres", tipo: false })
+                setTimeout(() => {
+                    setMensaje({})
+                }, 3000);
+            return
+        }
+
+        const resultado = await actualizarPassword(form)
+        setMensaje(resultado)
+        setTimeout(() => {
+            setMensaje({})
+        }, 3000);
+}
 
     const handleChange = (e) => {
         setForm({
@@ -19,9 +53,11 @@ const Password = () => {
         <div className='mt-5'>
                 <h1 className='font-black text-4xl text-gray-500'>Password</h1>
                 <hr className='my-4' />
-                <p className='mb-2'>Este módulo te permite actualizar el password del usuario</p>
+                <p className='mb-2'>Este módulo te permite actualizar el password del veterinario</p>
         </div>
-        <form >
+        <form  onSubmit={handleSubmit}>
+        {Object.keys(mensaje).length > 0 && <Mensaje tipo={mensaje.tipo}>{mensaje.respuesta}</Mensaje>}
+            
 
             <div>
                 <label

@@ -60,6 +60,24 @@ const AuthProvider = ({ children }) => {
         }
     }
 
+    const actualizarPassword = async (datos) => {
+        const token = localStorage.getItem('token')
+        try {
+            const url = `${import.meta.env.VITE_BACKEND_URL}/veterinario/actualizarpassword`
+            const options = {
+                headers: {
+                    method: 'PUT',
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                }
+            }
+            const respuesta = await axios.put(url, datos, options)
+            return { respuesta: respuesta.data.msg, tipo: true }
+        } catch (error) {
+            return { respuesta: error.response.data.msg, tipo: false }
+        }
+    }
+
 
 
     return <AuthContext.Provider value={
@@ -67,7 +85,8 @@ const AuthProvider = ({ children }) => {
             // Contenido del mensaje
             auth,
             setAuth,
-            actualizarPerfil
+            actualizarPerfil,
+            actualizarPassword
         }
     }>
         {children}

@@ -27,4 +27,4 @@ export const CardPerfilPaciente = () => {
             </div>
         </div>
     )
-}
+} 
